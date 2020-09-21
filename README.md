@@ -20,8 +20,8 @@ Temas:
 ## Alunos
 |Matrícula | Aluno |
 | -- | -- |
-| xx/xxxxxx  |  xxxx xxxx xxxxx |
-| xx/xxxxxx  |  xxxx xxxx xxxxx |
+| 18/0129058 |  Paulo Victor da Silva |
+| 17/0045943 |  Thallys Silva Braz |
 
 ## Sobre 
 Descreva os objetivos do seu projeto e como ele funciona. 
