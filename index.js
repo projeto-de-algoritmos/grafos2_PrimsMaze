@@ -1,28 +1,73 @@
 let canvas = document.getElementById('canvas');
 let context = canvas.getContext('2d');
 
-var map = [
-  [0, 1, 1, 0, 1, 1, 0, 1, 0, 0],
-  [0, 0, 1, 0, 0, 0, 0, 1, 1, 0],
-  [0, 1, 0, 0, 1, 1, 0, 0, 0, 0],
-  [0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
-  [1, 0, 1, 0, 0, 0, 1, 1, 0, 0],
-  [0, 0, 1, 1, 1, 0, 1, 0, 0, 1],
-  [1, 0, 1, 0, 0, 0, 1, 0, 1, 1],
-  [0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 1, 0, 1, 0, 0],
-  [1, 0, 1, 0, 1, 0, 0, 1, 1, 0],
+var maze = [
+  [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
 ];
 
-function drawMap(map){
-  for (i = 0; i < map.length; i++){
-    for (j = 0; j < map[i].length; j++){
+
+
+
+function prims() {
+  var toBeExplored = [];
+
+  var start = [0, 0];
+  toBeExplored.push(start);
+
+  while(toBeExplored.length > 0) {
+    let currentNode = toBeExplored.shift();
+
+    let neighbors = getNeighbors(currentNode[0], currentNode[1]);
+    let randomIndex = Math.floor(Math.random() * 4); 
+    maze[neighbors[randomIndex][0]][neighbors[randomIndex][1]] = 0;
+
+    neighbors = neighbors.slice(randomIndex, 1);
+
+
+    neighbors.map(neighbor => toBeExplored.push(neighbor));
+
+  }
+  console.log(maze);
+}
+
+function getNeighbors(x, y){
+  let queue = [];
+  if(x - 1 > 0 && maze[x - 1][y] !== 0){
+    queue.push([x - 1, y]);
+  }
+  if(y - 1 > 0 && maze[x][y - 1] !== 0){
+    queue.push([x, y - 1]);
+  }
+  if(x + 1 < 10 && maze[x + 1][y] !== 0){
+    queue.push([x + 1, y]);
+  }
+  if(y + 1 < 10  && maze[x][y + 1] !== 0){
+    queue.push([x, y + 1]);
+  }
+
+  return queue;
+}
+
+prims();
+
+function drawMaze(maze){
+  for (i = 0; i < maze.length; i++){
+    for (j = 0; j < maze[i].length; j++){
       if(i === 9 && j === 9){
         context.beginPath();
         context.fillStyle = '#FF0000';
         context.fillRect(j * 50, i * 50, 50, 50);
       } else {
-        if (map[i][j] === 1) {
+        if (maze[i][j] === 1) {
           context.beginPath();
           context.fillStyle = '#000000';
           context.fillRect(j * 50, i * 50, 50, 50);
@@ -31,6 +76,8 @@ function drawMap(map){
     }
   }
 }
+
+// Player Functionality
 
 function drawPlayer(player){
   context.clearRect(player.x * 50, player.y * 50, 50, 50);
@@ -54,21 +101,11 @@ var player = {
   nextY: 0
 };
 
-// function animate(x, y) {
-//   requestAnimationFrame(animate);
-//   context.clearRect(x, y, 50, 50);
-
-//   context.beginPath();
-//   context.fillStyle = '#00FF00';
-//   context.fillRect(player.x, player.y, 50, 50);
-// }
-// animate(50, 100);
-
 window.onkeydown = function(e){
   if(e.key === "ArrowLeft"){
     if(player.x !== 0) {
       player.nextX -= 1;
-      if(map[player.nextY][player.nextX] !== 1){
+      if(maze[player.nextY][player.nextX] !== 1){
         drawPlayer(player);
       } else {
         player.nextX += 1;
@@ -78,7 +115,7 @@ window.onkeydown = function(e){
   if(e.key === "ArrowUp"){
     if(player.y !== 0) {
       player.nextY -= 1;
-      if(map[player.nextY][player.nextX] !== 1){
+      if(maze[player.nextY][player.nextX] !== 1){
         drawPlayer(player);
       } else {
         player.nextY += 1;
@@ -88,7 +125,7 @@ window.onkeydown = function(e){
   if(e.key === "ArrowRight"){
     if(player.x !== 9) {
       player.nextX += 1;
-      if(map[player.nextY][player.nextX] !== 1){
+      if(maze[player.nextY][player.nextX] !== 1){
         drawPlayer(player);
       } else {
         player.nextX -= 1;
@@ -98,7 +135,7 @@ window.onkeydown = function(e){
   if(e.key === "ArrowDown"){
     if(player.y !== 9) {
       player.nextY += 1;
-      if(map[player.nextY][player.nextX] !== 1){
+      if(maze[player.nextY][player.nextX] !== 1){
         drawPlayer(player);
       } else {
         player.nextY -= 1;
@@ -107,8 +144,10 @@ window.onkeydown = function(e){
   } 
 }
 
+// Initialize the game
+
 window.onload = function() {
-  drawMap(map);
-  drawPlayer(player);
+  // drawMaze(maze);
+  // drawPlayer(player);
 }
 
