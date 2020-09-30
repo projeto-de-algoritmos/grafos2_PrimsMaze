@@ -17,10 +17,16 @@ var map = [
 function drawMap(map){
   for (i = 0; i < map.length; i++){
     for (j = 0; j < map[i].length; j++){
-      if (map[i][j] === 1) {
+      if(i === 9 && j === 9){
         context.beginPath();
-        context.fillStyle = '#000000';
+        context.fillStyle = '#FF0000';
         context.fillRect(j * 50, i * 50, 50, 50);
+      } else {
+        if (map[i][j] === 1) {
+          context.beginPath();
+          context.fillStyle = '#000000';
+          context.fillRect(j * 50, i * 50, 50, 50);
+        }
       }
     }
   }
@@ -35,6 +41,10 @@ function drawPlayer(player){
 
   player.x = player.nextX;
   player.y = player.nextY;
+
+  if (player.x === 9 && player.y === 9){
+    alert('Ganhou!');
+  }
 }
 
 var player = {
