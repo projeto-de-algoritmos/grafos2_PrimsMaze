@@ -8,10 +8,8 @@ var aLoopSize = 11, bLoopSize = 17;
 var u = 10, v = 16, size = 23;
 
 var maze = [];
-var prev = [];
 var safe = [];
 var mst = [];
-
 
 class Node {
   constructor(x, y, size, value){
@@ -106,8 +104,6 @@ function initialize(){
     }
   }
 
-  prev[0] = maze[0][0];
-
   safe[0] = maze[0][0].edges[0];
   safe[1] = maze[0][0].edges[1];
 
@@ -116,11 +112,49 @@ function initialize(){
 
   mst[0] = maze[0][0];
   mst[0].draw();
+
+  while(true){
+    prim();
+  }
 }
 
+function prim() {
+  var min = new Edge();
 
+  for (var p = 0; p < safe.length; p++){
+    if(safe[p].a.isInMST && safe[p].b.isInMST){
+      safe.splice(p, 1);
+    }
 
+    if ((safe[p].weight < min.weight) && (!(safe[p].b.isInMST))){
+      min = safe[p];
+      if (min.weight === 0) {
+        break;
+      }
+    }
+  }
 
+  for(var i = 0; i < 4; i++){
+    if(min.b.edges[i] !== undefined && !(min.b.edges[i].b.isInMST)) {
+      if(min.b.edges[i].weight > 0) {
+        safe[safe.length] = min.b.edges[i];
+      } else{
+        safe.splice(0, 0, min.b.edges[i]);
+      }
+    }
+  }
+
+  min.b.isInMST = true;
+  min.minimal = true;
+
+  min.b.draw();
+  min.draw();
+
+  mst[mst.length] = min;
+  mst[mst.length] = min.b;
+  console.log(maze);
+
+}
 
 
 // // Player Functionality
