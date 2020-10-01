@@ -21,6 +21,7 @@ class Node {
     this.isInMST = false;
     this.path = false;
     this.currentNode = false;
+    this.goal = false;
     this.edges = [];
 
     this.draw = this.draw;
@@ -28,9 +29,13 @@ class Node {
 
   draw() {
     if(this.isInMST) {
-      if(this.path || this.current){
+      if(this.path || this.currentNode){
         context.fillStyle = "red";
-      } else {
+      } 
+      else if (this.goal){
+        context.fillStyle = "green";
+      }
+      else {
         context.fillStyle = "white";
       }
       context.fillRect(this.x, this.y, this.size, this.size);
@@ -108,7 +113,10 @@ function initialize(){
   safe[1] = maze[0][0].edges[1];
 
   maze[0][0].isInMST = true;
-  maze[0][0].path = true;
+  maze[0][0].currentNode = true;
+
+  maze[4][4].goal = true;
+  maze[4][4].draw();
 
   mst[0] = maze[0][0];
   mst[0].draw();
@@ -152,79 +160,58 @@ function prim() {
 
   mst[mst.length] = min;
   mst[mst.length] = min.b;
-  console.log(maze);
-
 }
 
 
-// // Player Functionality
+// Player Functionality
 
-// function drawPlayer(player){
-//   context.clearRect(player.x * 50, player.y * 50, 50, 50);
+var playerPosition = [0, 0];
 
-//   context.beginPath();
-//   context.fillStyle = '#00FF00';
-//   context.fillRect(player.nextX * 50, player.nextY * 50, 50, 50);
+window.onkeydown = function(e){
 
-//   player.x = player.nextX;
-//   player.y = player.nextY;
+  if(e.key === "ArrowLeft"){
+    if (maze[playerPosition[0]][playerPosition[1] - 1].isInMST){
+      maze[playerPosition[0]][playerPosition[1]].currentNode = false;
+      maze[playerPosition[0]][playerPosition[1]].draw();
 
-//   if (player.x === 9 && player.y === 9){
-//     alert('Ganhou!');
-//   }
-// }
+      playerPosition[1] -= 1;
+      maze[playerPosition[0]][playerPosition[1]].currentNode = true;
+      maze[playerPosition[0]][playerPosition[1]].draw();
+    }    
+  }
+  if(e.key === "ArrowUp"){
+    if (maze[playerPosition[0] - 1][playerPosition[1]].isInMST){
+      maze[playerPosition[0]][playerPosition[1]].currentNode = false;
+      maze[playerPosition[0]][playerPosition[1]].draw();
 
-// var player = {
-//   x: 0,
-//   y: 0,
-//   nextX: 0,
-//   nextY: 0
-// };
+      playerPosition[0] -= 1;
+      maze[playerPosition[0]][playerPosition[1]].currentNode = true;
+      maze[playerPosition[0]][playerPosition[1]].draw();
+    }
+  }
+  if(e.key === "ArrowRight"){
+    if (maze[playerPosition[0]][playerPosition[1] + 1].isInMST){
+      maze[playerPosition[0]][playerPosition[1]].currentNode = false;
+      maze[playerPosition[0]][playerPosition[1]].draw();
 
-// window.onkeydown = function(e){
-//   if(e.key === "ArrowLeft"){
-//     if(player.x !== 0) {
-//       player.nextX -= 1;
-//       if(maze[player.nextY][player.nextX] !== 1){
-//         drawPlayer(player);
-//       } else {
-//         player.nextX += 1;
-//       } 
-//     }
-//   }
-//   if(e.key === "ArrowUp"){
-//     if(player.y !== 0) {
-//       player.nextY -= 1;
-//       if(maze[player.nextY][player.nextX] !== 1){
-//         drawPlayer(player);
-//       } else {
-//         player.nextY += 1;
-//       } 
-//     }
-//   }
-//   if(e.key === "ArrowRight"){
-//     if(player.x !== 9) {
-//       player.nextX += 1;
-//       if(maze[player.nextY][player.nextX] !== 1){
-//         drawPlayer(player);
-//       } else {
-//         player.nextX -= 1;
-//       } 
-//     }
-//   }
-//   if(e.key === "ArrowDown"){
-//     if(player.y !== 9) {
-//       player.nextY += 1;
-//       if(maze[player.nextY][player.nextX] !== 1){
-//         drawPlayer(player);
-//       } else {
-//         player.nextY -= 1;
-//       } 
-//     }
-//   } 
-// }
+      playerPosition[1] += 1;
+      maze[playerPosition[0]][playerPosition[1]].currentNode = true;
+      maze[playerPosition[0]][playerPosition[1]].draw();
+    }
+  }
+  if(e.key === "ArrowDown"){
+    if (maze[playerPosition[0] + 1][playerPosition[1]].isInMST){
+      maze[playerPosition[0]][playerPosition[1]].currentNode = false;
+      maze[playerPosition[0]][playerPosition[1]].draw();
 
-// // Initialize the game
+      playerPosition[0] += 1;
+      maze[playerPosition[0]][playerPosition[1]].currentNode = true;
+      maze[playerPosition[0]][playerPosition[1]].draw();
+    }
+  } 
+}
+
+// Initialize the game
 
 window.onload = function() {
   initialize();
