@@ -1,153 +1,198 @@
 let canvas = document.getElementById('canvas');
 let context = canvas.getContext('2d');
 
-var maze = [
-  [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-];
+const height = 500;
+const width = 770;
+
+var aLoopSize = 11, bLoopSize = 17;
+var u = 10, v = 16, size = 23;
+
+var maze = [];
+var prev = [];
+var safe = [];
+var mst = [];
 
 
+class Node {
+  constructor(x, y, size, value){
+    this.x = x * 2 * size;
+    this.y = y * 2 * size;
+    this.size = size;
+    this.value = value;
 
+    this.isInMST = false;
+    this.path = false;
+    this.currentNode = false;
+    this.edges = [];
 
-function prims() {
-  var toBeExplored = [];
-
-  var start = [0, 0];
-  toBeExplored.push(start);
-
-  while(toBeExplored.length > 0) {
-    let currentNode = toBeExplored.shift();
-
-    let neighbors = getNeighbors(currentNode[0], currentNode[1]);
-    let randomIndex = Math.floor(Math.random() * 4); 
-    maze[neighbors[randomIndex][0]][neighbors[randomIndex][1]] = 0;
-
-    neighbors = neighbors.slice(randomIndex, 1);
-
-
-    neighbors.map(neighbor => toBeExplored.push(neighbor));
-
-  }
-  console.log(maze);
-}
-
-function getNeighbors(x, y){
-  let queue = [];
-  if(x - 1 > 0 && maze[x - 1][y] !== 0){
-    queue.push([x - 1, y]);
-  }
-  if(y - 1 > 0 && maze[x][y - 1] !== 0){
-    queue.push([x, y - 1]);
-  }
-  if(x + 1 < 10 && maze[x + 1][y] !== 0){
-    queue.push([x + 1, y]);
-  }
-  if(y + 1 < 10  && maze[x][y + 1] !== 0){
-    queue.push([x, y + 1]);
+    this.draw = this.draw;
   }
 
-  return queue;
-}
-
-prims();
-
-function drawMaze(maze){
-  for (i = 0; i < maze.length; i++){
-    for (j = 0; j < maze[i].length; j++){
-      if(i === 9 && j === 9){
-        context.beginPath();
-        context.fillStyle = '#FF0000';
-        context.fillRect(j * 50, i * 50, 50, 50);
+  draw() {
+    if(this.isInMST) {
+      if(this.path || this.current){
+        context.fillStyle = "red";
       } else {
-        if (maze[i][j] === 1) {
-          context.beginPath();
-          context.fillStyle = '#000000';
-          context.fillRect(j * 50, i * 50, 50, 50);
-        }
+        context.fillStyle = "white";
       }
+      context.fillRect(this.x, this.y, this.size, this.size);
     }
   }
 }
 
-// Player Functionality
+class Edge {
+  constructor(nodeA, nodeB, edge){
+    this.a;
+    this.b;
+    this.weight;
+    this.minimal = false;
 
-function drawPlayer(player){
-  context.clearRect(player.x * 50, player.y * 50, 50, 50);
+    if(nodeA === undefined && nodeB === undefined && edge === undefined){
+      this.weight = Infinity;
+    }
 
-  context.beginPath();
-  context.fillStyle = '#00FF00';
-  context.fillRect(player.nextX * 50, player.nextY * 50, 50, 50);
+    else if (edge === undefined) {
+      this.weight = Math.round(Math.random());
+      this.a = nodeA;
+      this.b = nodeB;
+    }
+    
+    else {
+      this.weight = edge.weight;
+      this.a = nodeA;
+      this.b = nodeB;
+    }
+  
+    this.draw = this.draw;
+  }
+  
+  draw(){
+    if (this.minimal) {
+      var size = this.a.size;
 
-  player.x = player.nextX;
-  player.y = player.nextY;
-
-  if (player.x === 9 && player.y === 9){
-    alert('Ganhou!');
+      if(this.a.path && this.b.path) {
+        context.fillStyle = "red"
+      } else {
+        context.fillStyle = "white";
+      }
+      context.fillRect((this.a.x + this.b.x) / 2, (this.a.y + this.b.y) / 2, size, size);
+    }
   }
 }
 
-var player = {
-  x: 0,
-  y: 0,
-  nextX: 0,
-  nextY: 0
-};
+function initialize(){
+  for(var i = 0; i < aLoopSize; i++){
+    maze[i] = [];
+    for(var j = 0; j < bLoopSize; j++) {
+      maze[i][j] = new Node(j, i, size, i * bLoopSize + j);
+    }
+  }
 
-window.onkeydown = function(e){
-  if(e.key === "ArrowLeft"){
-    if(player.x !== 0) {
-      player.nextX -= 1;
-      if(maze[player.nextY][player.nextX] !== 1){
-        drawPlayer(player);
-      } else {
-        player.nextX += 1;
-      } 
+  // Adiciona paredes laterais
+  for (var i = 0; i < aLoopSize; i++){
+    for(var j = 0; j < bLoopSize - 1; j++){
+      maze[i][j].edges[0] = new Edge(maze[i][j], maze[i][j + 1]);
+
+      maze[i][j + 1].edges[2] = new Edge(maze[i][j + 1], maze[i][j], maze[i][j].edges[0]);
     }
   }
-  if(e.key === "ArrowUp"){
-    if(player.y !== 0) {
-      player.nextY -= 1;
-      if(maze[player.nextY][player.nextX] !== 1){
-        drawPlayer(player);
-      } else {
-        player.nextY += 1;
-      } 
+
+  // Adiciona paredes inferiores
+  for (var i = 0; i < aLoopSize - 1; i++){
+    for(var j = 0; j < bLoopSize; j++){
+      maze[i][j].edges[1] = new Edge(maze[i][j], maze[i + 1][j]);
+
+      maze[i + 1][j].edges[3] = new Edge(maze[i + 1][j], maze[i][j], maze[i][j].edges[1]);
     }
   }
-  if(e.key === "ArrowRight"){
-    if(player.x !== 9) {
-      player.nextX += 1;
-      if(maze[player.nextY][player.nextX] !== 1){
-        drawPlayer(player);
-      } else {
-        player.nextX -= 1;
-      } 
-    }
-  }
-  if(e.key === "ArrowDown"){
-    if(player.y !== 9) {
-      player.nextY += 1;
-      if(maze[player.nextY][player.nextX] !== 1){
-        drawPlayer(player);
-      } else {
-        player.nextY -= 1;
-      } 
-    }
-  } 
+
+  prev[0] = maze[0][0];
+
+  safe[0] = maze[0][0].edges[0];
+  safe[1] = maze[0][0].edges[1];
+
+  maze[0][0].isInMST = true;
+  maze[0][0].path = true;
+
+  mst[0] = maze[0][0];
+  mst[0].draw();
 }
 
-// Initialize the game
+
+
+
+
+
+// // Player Functionality
+
+// function drawPlayer(player){
+//   context.clearRect(player.x * 50, player.y * 50, 50, 50);
+
+//   context.beginPath();
+//   context.fillStyle = '#00FF00';
+//   context.fillRect(player.nextX * 50, player.nextY * 50, 50, 50);
+
+//   player.x = player.nextX;
+//   player.y = player.nextY;
+
+//   if (player.x === 9 && player.y === 9){
+//     alert('Ganhou!');
+//   }
+// }
+
+// var player = {
+//   x: 0,
+//   y: 0,
+//   nextX: 0,
+//   nextY: 0
+// };
+
+// window.onkeydown = function(e){
+//   if(e.key === "ArrowLeft"){
+//     if(player.x !== 0) {
+//       player.nextX -= 1;
+//       if(maze[player.nextY][player.nextX] !== 1){
+//         drawPlayer(player);
+//       } else {
+//         player.nextX += 1;
+//       } 
+//     }
+//   }
+//   if(e.key === "ArrowUp"){
+//     if(player.y !== 0) {
+//       player.nextY -= 1;
+//       if(maze[player.nextY][player.nextX] !== 1){
+//         drawPlayer(player);
+//       } else {
+//         player.nextY += 1;
+//       } 
+//     }
+//   }
+//   if(e.key === "ArrowRight"){
+//     if(player.x !== 9) {
+//       player.nextX += 1;
+//       if(maze[player.nextY][player.nextX] !== 1){
+//         drawPlayer(player);
+//       } else {
+//         player.nextX -= 1;
+//       } 
+//     }
+//   }
+//   if(e.key === "ArrowDown"){
+//     if(player.y !== 9) {
+//       player.nextY += 1;
+//       if(maze[player.nextY][player.nextX] !== 1){
+//         drawPlayer(player);
+//       } else {
+//         player.nextY -= 1;
+//       } 
+//     }
+//   } 
+// }
+
+// // Initialize the game
 
 window.onload = function() {
-  // drawMaze(maze);
-  // drawPlayer(player);
+  initialize();
 }
 
