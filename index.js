@@ -6,22 +6,23 @@ const width = 770;
 
 var aLoopSize = 11, bLoopSize = 17;
 var u = 10, v = 16, size = 23;
+var timer, count = 0, speed = 33, running = false;
 
 var maze = [];
 var safe = [];
+var prev = [];
 var mst = [];
 
 class Node {
-  constructor(x, y, size, value){
+  constructor(x, y, size, position){
     this.x = x * 2 * size;
     this.y = y * 2 * size;
     this.size = size;
-    this.value = value;
+    this.position = position; 
 
     this.isInMST = false;
     this.path = false;
     this.currentNode = false;
-    this.goal = false;
     this.edges = [];
 
     this.draw = this.draw;
@@ -32,9 +33,6 @@ class Node {
       if(this.path || this.currentNode){
         context.fillStyle = "red";
       } 
-      else if (this.goal){
-        context.fillStyle = "green";
-      }
       else {
         context.fillStyle = "white";
       }
@@ -84,6 +82,7 @@ class Edge {
 }
 
 function initialize(){
+  //Adiciona os nós ao array
   for(var i = 0; i < aLoopSize; i++){
     maze[i] = [];
     for(var j = 0; j < bLoopSize; j++) {
@@ -91,7 +90,7 @@ function initialize(){
     }
   }
 
-  // Adiciona paredes laterais
+  // Adiciona paredes laterais para cada nó
   for (var i = 0; i < aLoopSize; i++){
     for(var j = 0; j < bLoopSize - 1; j++){
       maze[i][j].edges[0] = new Edge(maze[i][j], maze[i][j + 1]);
@@ -100,7 +99,7 @@ function initialize(){
     }
   }
 
-  // Adiciona paredes inferiores
+  // Adiciona paredes verticais para cada nó
   for (var i = 0; i < aLoopSize - 1; i++){
     for(var j = 0; j < bLoopSize; j++){
       maze[i][j].edges[1] = new Edge(maze[i][j], maze[i + 1][j]);
@@ -109,31 +108,31 @@ function initialize(){
     }
   }
 
+  //Adiciona o primeiro nó como sendo da árvore geradora mínima.
+  prev[0] = maze[0][0];
+
   safe[0] = maze[0][0].edges[0];
   safe[1] = maze[0][0].edges[1];
 
   maze[0][0].isInMST = true;
-  maze[0][0].currentNode = true;
-
-  maze[4][4].goal = true;
-  maze[4][4].draw();
+  maze[0][0].path = true;
 
   mst[0] = maze[0][0];
   mst[0].draw();
-
-  while(true){
-    prim();
-  }
 }
 
 function prim() {
   var min = new Edge();
 
-  for (var p = 0; p < safe.length; p++){
-    if(safe[p].a.isInMST && safe[p].b.isInMST){
-      safe.splice(p, 1);
-    }
+  // a cada execução, o novo nó selecionado é colorido de vermelho.
+  // assim que a função é executada novamente, o nó anterior é pintado de branco.
+  var lastNode = mst[mst.length - 1];
+  lastNode.currentNode = false;
+  lastNode.draw();
 
+  // Verifica todos as laterais do nó e compara os pesos de cada uma e se ela 
+  // não leva para um nó que já faz parte da árvore geradora mínima.
+  for (var p = 0; p < safe.length; p++){
     if ((safe[p].weight < min.weight) && (!(safe[p].b.isInMST))){
       min = safe[p];
       if (min.weight === 0) {
@@ -141,6 +140,8 @@ function prim() {
       }
     }
   }
+
+  // Todas as laterais do nó selecionado são adicionadas de forma crescente de peso.
 
   for(var i = 0; i < 4; i++){
     if(min.b.edges[i] !== undefined && !(min.b.edges[i].b.isInMST)) {
@@ -153,6 +154,7 @@ function prim() {
   }
 
   min.b.isInMST = true;
+  min.b.currentNode = true;
   min.minimal = true;
 
   min.b.draw();
@@ -160,60 +162,43 @@ function prim() {
 
   mst[mst.length] = min;
   mst[mst.length] = min.b;
+
+  prev[min.b.position] = min.a;
+
+  // Verifica se o algoritmo já terminou a execução
+  count += 1;
+  if (count === (aLoopSize * bLoopSize) - 1) {
+    min.b.currentNode = false;
+    min.b.draw();
+    clearInterval(timer);
+  }
 }
 
-
-// Player Functionality
-
-var playerPosition = [0, 0];
-
-window.onkeydown = function(e){
-
-  if(e.key === "ArrowLeft"){
-    if (maze[playerPosition[0]][playerPosition[1] - 1].isInMST){
-      maze[playerPosition[0]][playerPosition[1]].currentNode = false;
-      maze[playerPosition[0]][playerPosition[1]].draw();
-
-      playerPosition[1] -= 1;
-      maze[playerPosition[0]][playerPosition[1]].currentNode = true;
-      maze[playerPosition[0]][playerPosition[1]].draw();
-    }    
+// Mostra o caminho do primeiro nó até o último no canto direito inferior
+function showPath() {
+  var n = maze[u][v];
+  while(prev[n.position].position !== n.position) {
+    n.path = true;
+    n = prev[n.position];
   }
-  if(e.key === "ArrowUp"){
-    if (maze[playerPosition[0] - 1][playerPosition[1]].isInMST){
-      maze[playerPosition[0]][playerPosition[1]].currentNode = false;
-      maze[playerPosition[0]][playerPosition[1]].draw();
-
-      playerPosition[0] -= 1;
-      maze[playerPosition[0]][playerPosition[1]].currentNode = true;
-      maze[playerPosition[0]][playerPosition[1]].draw();
-    }
-  }
-  if(e.key === "ArrowRight"){
-    if (maze[playerPosition[0]][playerPosition[1] + 1].isInMST){
-      maze[playerPosition[0]][playerPosition[1]].currentNode = false;
-      maze[playerPosition[0]][playerPosition[1]].draw();
-
-      playerPosition[1] += 1;
-      maze[playerPosition[0]][playerPosition[1]].currentNode = true;
-      maze[playerPosition[0]][playerPosition[1]].draw();
-    }
-  }
-  if(e.key === "ArrowDown"){
-    if (maze[playerPosition[0] + 1][playerPosition[1]].isInMST){
-      maze[playerPosition[0]][playerPosition[1]].currentNode = false;
-      maze[playerPosition[0]][playerPosition[1]].draw();
-
-      playerPosition[0] += 1;
-      maze[playerPosition[0]][playerPosition[1]].currentNode = true;
-      maze[playerPosition[0]][playerPosition[1]].draw();
-    }
-  } 
+  maze[0][0].path = true;
+  drawPath();
 }
 
-// Initialize the game
+function drawPath() {
+  for (var i = 0; i < mst.length; i++) {
+    mst[i].draw();
+  }
+}
 
-window.onload = function() {
+// Inicia o gerador de labirinto
+
+function startExec(){
   initialize();
+
+  running = true;
+  timer = setInterval(function(){
+    prim();
+  }, speed);
 }
 
