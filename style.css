@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+p {
+  font-size: 20px;
+}
+
+li {
+  font-size: 18px;
+}
+
+#canvas {
+  margin-top: 80px;
+}
+
+.buttons button {
+  margin-top: 20px;
+  width: 120px;
+  height: 40px;
+  border-radius: 8px;
+
+  border: none;
+  font-size: 18px;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-weight: bold;
+
+  background: #003049;
+  color: white;
+  transition: height .2s;
+  transition: width .2s;
+}
+
+.buttons button:hover {
+  height: 45px;
+  width: 125px;
+
+  background: #0689cf;
+
+}

@@ -34,7 +34,7 @@ class Node {
         context.fillStyle = "red";
       } 
       else {
-        context.fillStyle = "white";
+        context.fillStyle = "#eae2b7";
       }
       context.fillRect(this.x, this.y, this.size, this.size);
     }
@@ -74,7 +74,7 @@ class Edge {
       if(this.a.path && this.b.path) {
         context.fillStyle = "red"
       } else {
-        context.fillStyle = "white";
+        context.fillStyle = "#eae2b7";
       }
       context.fillRect((this.a.x + this.b.x) / 2, (this.a.y + this.b.y) / 2, size, size);
     }

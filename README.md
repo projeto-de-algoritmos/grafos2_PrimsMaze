@@ -1,21 +1,6 @@
-**!! Atenção: Renomeie o seu repositório para (Tema)_(NomeDoProjeto). !!** 
+# Prims Maze
 
-Temas:
- - Grafos1
- - Grafos2
- - PD
- - D&C
- - Greed
- - Final 
- 
- **!! *Não coloque os nomes dos alunos no título do repositório*. Exemplo de título correto: Grafos2_Labirinto-do-Minotauro !!**
- 
- (Apague essa seção)
-
-# NomedoProjeto
-
-**Número da Lista**: X<br>
-**Conteúdo da Disciplina**: XXXXXXXXXX<br>
+**Conteúdo da Disciplina**: Grafos 2<br>
 
 ## Alunos
 |Matrícula | Aluno |
@@ -24,21 +9,21 @@ Temas:
 | 17/0045943 |  Thallys Silva Braz |
 
 ## Sobre 
-Descreva os objetivos do seu projeto e como ele funciona. 
+Gerador de labirinto utilizando o algoritmo de Prim. Objetivo é facilitar a visualização de como o algoritmo funciona. 
 
 ## Screenshots
-Adicione 3 ou mais screenshots do projeto em funcionamento.
+<img src="https://github.com/projeto-de-algoritmos/grafos2_PrimsMaze/blob/master/images/generating.png" alt="Prims Maze" /> 
+<img src="https://github.com/projeto-de-algoritmos/grafos2_PrimsMaze/blob/master/images/generated.png"  alt="Prims Maze" />
+<img src="https://github.com/projeto-de-algoritmos/grafos2_PrimsMaze/blob/master/images/path.png"  alt="Prims Maze" />
 
 ## Instalação 
-**Linguagem**: xxxxxx<br>
-**Framework**: (caso exista)<br>
-Descreva os pré-requisitos para rodar o seu projeto e os comandos necessários.
+**Linguagem**: HTML e JS<br>
+Basta clonar o projeto e abrir o arquivo index.html
 
 ## Uso 
-Explique como usar seu projeto caso haja algum passo a passo após o comando de execução.
+Clicar no botão "Iniciar" para iniciar o gerador. 
+O botão "Caminho" mostra o menor caminho até o último nó.
 
-## Outros 
-Quaisquer outras informações sobre seu projeto podem ser descritas abaixo.
 
 
 

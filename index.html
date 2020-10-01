@@ -4,12 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prims Maze</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <button onclick="startExec()">Iniciar</button>
-  <button onclick="showPath()">Caminho</button>
-  <canvas id="canvas" height="483px" width="758px" style="border: 1px solid #000; background-color: #000;"></canvas>
+  <div id="title">
+    <h1>Gerador de labirinto - Prim's Algorithm</h1>
+  </div>
+  <p>Como o algoritmo funciona para gerar esse labirinto:</p>
+  <ol>
+    <li>Inicia a árvore geradora mínima com apenas um nó.</li>
+    <li>Aumenta a árvore um nó por vez, sempre procurando os que ainda não estão na árvore e que possuem o menor peso. Repete-se até que a árvore esteja completa</li>
+  </ol>
 
+  <canvas id="canvas" height="483px" width="758px" style="border: 1px solid #003049; background-color: #003049;"></canvas>
+
+  <div class="buttons">
+    <button onclick="startExec()">Iniciar</button>
+    <button onclick="showPath()">Caminho</button>
+  </div>
   <script src="index.js"></script>
 </body>
 </html>
