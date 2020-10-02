@@ -12,9 +12,9 @@
 Gerador de labirinto utilizando o algoritmo de Prim. Objetivo é facilitar a visualização de como o algoritmo funciona. 
 
 ## Screenshots
-<img src="https://github.com/projeto-de-algoritmos/grafos2_PrimsMaze/blob/master/images/generating.png" alt="Prims Maze" /> 
-<img src="https://github.com/projeto-de-algoritmos/grafos2_PrimsMaze/blob/master/images/generated.png"  alt="Prims Maze" />
-<img src="https://github.com/projeto-de-algoritmos/grafos2_PrimsMaze/blob/master/images/path.png"  alt="Prims Maze" />
+<img src="https://github.com/projeto-de-algoritmos/grafos2_PrimsMaze/blob/master/assets/generating.png" alt="Prims Maze" /> 
+<img src="https://github.com/projeto-de-algoritmos/grafos2_PrimsMaze/blob/master/assets/generated.png"  alt="Prims Maze" />
+<img src="https://github.com/projeto-de-algoritmos/grafos2_PrimsMaze/blob/master/assets/path.png"  alt="Prims Maze" />
 
 ## Instalação 
 **Linguagem**: HTML e JS<br>
