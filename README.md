@@ -9,7 +9,9 @@
 | 17/0045943 |  Thallys Silva Braz |
 
 ## Sobre 
-Gerador de labirinto utilizando o algoritmo de Prim. Objetivo é facilitar a visualização de como o algoritmo funciona. 
+Gerador de labirinto utilizando o algoritmo de Prim. Objetivo é facilitar a visualização de como o algoritmo funciona.
+
+Vídeo explicando projeto dentro da pasta "assets".
 
 ## Screenshots
 <img src="https://github.com/projeto-de-algoritmos/grafos2_PrimsMaze/blob/master/assets/generating.png" alt="Prims Maze" /> 
